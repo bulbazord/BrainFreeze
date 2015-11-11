@@ -1,3 +1,5 @@
-An interpreter for the BrainFuck esoteric programming language.
+Brainfuck
+=========
+An interpreter for BrainFuck, an esoteric programming language.
 
 Written in C
