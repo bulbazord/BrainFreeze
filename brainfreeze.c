@@ -9,7 +9,20 @@ void print_program(FILE *program)
 {
 	char instruction;
 	while (fscanf(program, "%c", &instruction) != EOF) {
-		fprintf(stdout, "%c", instruction);
+		switch(instruction) {
+			case '>':
+			case '<':
+			case '+':
+			case '-':
+			case '.':
+			case ',':
+			case '[':
+			case ']':
+				printf("%c", instruction);
+				break;
+			default:
+				break;
+		}
 	}
 }
 
@@ -48,13 +61,15 @@ int main(int argc, char** argv)
 
 	program = fopen(filename, "r");
 	if (!program) {
-		fprintf(stderr, "Error: %s doesn't exist or can't be read\n", filename);
+		fprintf(stderr, "Error: %s doesn't exist or can't be read\n", 
+				filename);
 		exit(1);
 	}
 
 	printf("BrainFreeze v0.1\n");
-	printf("Program loaded: %s\n", filename);
+	printf("Program loaded: %s\n\n", filename);
 	print_program(program);
+	printf("\n");
 
 	fclose(program);
 	return 0;
