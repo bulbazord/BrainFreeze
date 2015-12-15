@@ -2,14 +2,16 @@
 #include <stdlib.h>
 #include "brainfreeze.h"
 
+struct machine_state state;
+
 /*
- * A simple function to print out the entire program.
+ * A simple function to load the entire program into the program's state.
  */
-void print_program(FILE *program)
+void load_program(FILE *program)
 {
-	char instruction;
-	while (fscanf(program, "%c", &instruction) != EOF) {
-		switch(instruction) {
+	char instr;
+	while (fscanf(program, "%c", &instr) != EOF) {
+		switch(instr) {
 			case '>':
 			case '<':
 			case '+':
@@ -18,12 +20,23 @@ void print_program(FILE *program)
 			case ',':
 			case '[':
 			case ']':
-				printf("%c", instruction);
+				state.code[state.code_size++] = instr;
 				break;
 			default:
 				break;
 		}
 	}
+}
+
+/*
+ * Print the program for debugging purposes.
+ */
+void print_program(void)
+{
+	for (int i = 0; i < state.code_size; i++) {
+		printf("%c", state.code[i]);
+	}
+	printf("\n");
 }
 
 /*
@@ -35,7 +48,7 @@ void usage()
 	printf("<prog> is a program written in Brainfuck\n");
 }
 
-/* 
+/*
  * Main function of the interpreter
  *
  * Parsing command line arguments:
@@ -61,17 +74,22 @@ int main(int argc, char** argv)
 
 	program = fopen(filename, "r");
 	if (!program) {
-		fprintf(stderr, "Error: %s doesn't exist or can't be read\n", 
+		fprintf(stderr, "Error: %s doesn't exist or can't be read\n",
 				filename);
 		exit(1);
 	}
 
+	state.code = malloc(sizeof(char) * DEFAULT_CODE_SIZE);
+	state.code_size = 0;
+
 	printf("BrainFreeze v0.1\n");
 	printf("Program loaded: %s\n\n", filename);
-	print_program(program);
-	printf("\n");
+
+	load_program(program);
+	print_program();
 
 	fclose(program);
+	free(state.code);
 	return 0;
 }
 
