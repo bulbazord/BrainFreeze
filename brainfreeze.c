@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "brainfreeze.h"
 
 struct machine_state state;
@@ -18,6 +19,16 @@ void load_program(FILE *program)
 {
 	char instr;
 	while (fscanf(program, "%c", &instr) != EOF) {
+		// Check to see if need to resize code buffer
+		if (state.code_size == state.max_code_size) {
+			state.max_code_size *= 2;
+			char *temp = malloc(
+					sizeof(char *) * state.max_code_size);
+			memcpy(temp, state.code, state.code_size);
+			free(state.code);
+			state.code = temp;
+		}
+
 		switch(instr) {
 			case '>':
 			case '<':
@@ -40,7 +51,7 @@ void load_program(FILE *program)
  */
 void print_program(void)
 {
-	for (int i = 0; i < state.code_size; i++) {
+	for (unsigned int i = 0; i < state.code_size; i++) {
 		printf("%c", state.code[i]);
 	}
 	printf("\n");
@@ -88,6 +99,7 @@ int main(int argc, char** argv)
 
 	state.code = malloc(sizeof(char) * DEFAULT_CODE_SIZE);
 	state.code_size = 0;
+	state.max_code_size = DEFAULT_CODE_SIZE;
 
 	load_program(program);
 	print_program();

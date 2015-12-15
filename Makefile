@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Werror -Wall -pedantic
+CFLAGS=-Wextra -Werror -Wall -pedantic
 LDFLAGS=
 SOURCES=brainfreeze.c
 OBJECTS=$(SOURCES:.c=.o)
