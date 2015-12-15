@@ -10,6 +10,30 @@ struct machine_state state;
  */
 void execute_program(void)
 {
+	char instr = state.code[state.instr_ptr];
+	while (instr != '\0') {
+		putchar(instr);
+		instr = state.code[++state.instr_ptr];
+	}
+	printf("\n");
+}
+
+/*
+ * A pass over the code to ensure square brackets are balanced.
+ */
+int validate_program(void)
+{
+	int balance = 0;
+	for (unsigned int i = 0; i < state.code_size; i++) {
+		if (balance < 0)
+			return 1;
+		if (state.code[i] == '[')
+			balance++;
+		if (state.code[i] == ']')
+			balance--;
+	}
+
+	return balance;
 }
 
 /*
@@ -100,9 +124,18 @@ int main(int argc, char** argv)
 	state.code = malloc(sizeof(char) * DEFAULT_CODE_SIZE);
 	state.code_size = 0;
 	state.max_code_size = DEFAULT_CODE_SIZE;
+	state.instr_ptr = 0;
+	state.data_ptr = 0;
 
 	load_program(program);
-	print_program();
+
+	int valid = validate_program();
+	if (valid != 0) {
+		printf("Unbalanced brackets. Invalid Brainfuck program.\n");
+	} else {
+		//print_program();
+		execute_program();
+	}
 
 	fclose(program);
 	free(state.code);
