@@ -10,6 +10,7 @@ struct machine_state {
 	unsigned int code_size;
 };
 
+void execute_program(void);
 void load_program(FILE *program);
 void print_program(void);
 

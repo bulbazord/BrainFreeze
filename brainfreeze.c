@@ -5,6 +5,13 @@
 struct machine_state state;
 
 /*
+ * Main interpreter loop
+ */
+void execute_program(void)
+{
+}
+
+/*
  * A simple function to load the entire program into the program's state.
  */
 void load_program(FILE *program)
@@ -81,9 +88,6 @@ int main(int argc, char** argv)
 
 	state.code = malloc(sizeof(char) * DEFAULT_CODE_SIZE);
 	state.code_size = 0;
-
-	printf("BrainFreeze v0.1\n");
-	printf("Program loaded: %s\n\n", filename);
 
 	load_program(program);
 	print_program();
