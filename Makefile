@@ -8,7 +8,7 @@ EXECUTABLE=brainfreeze
 all: $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+	$(CC) $(LDFLAGS) $^ -o $@
 
 %.o : %.c %.h
 	$(CC) $(CFLAGS) -c $< -o $@
