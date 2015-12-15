@@ -3,6 +3,9 @@
 #include <string.h>
 #include "brainfreeze.h"
 
+#define OOB_ERR "Out of bounds exception: Cannot go above 30,000 cells."
+#define OOB_ERR2 "Out of bounds exception: Cannot go below 0 cells."
+
 struct machine_state state;
 
 /*
@@ -12,7 +15,50 @@ void execute_program(void)
 {
 	char instr = state.code[state.instr_ptr];
 	while (instr != '\0') {
-		putchar(instr);
+		switch (instr) {
+			case '>':
+				state.data_ptr++;
+				if (state.data_ptr >= MAX_CELLS) {
+					fprintf(stderr, OOB_ERR);
+					return;
+				}
+				break;
+
+			case '<':
+				state.data_ptr--;
+				// Underflow to 2^32 - 1
+				if (state.data_ptr >= MAX_CELLS) {
+					fprintf(stderr, OOB_ERR2);
+					return;
+				}
+				break;
+
+			case '+':
+				state.cells[state.data_ptr]++;
+				break;
+
+			case '-':
+				state.cells[state.data_ptr]--;
+				break;
+
+			case '.':
+				putchar(state.cells[state.data_ptr]);
+				break;
+
+			case ',':
+				state.cells[state.data_ptr] = getchar();
+				break;
+
+			case '[':
+				break;
+
+			case ']':
+				break;
+
+			default:
+				break;
+		}
+		//putchar(instr);
 		instr = state.code[++state.instr_ptr];
 	}
 	printf("\n");
@@ -46,7 +92,7 @@ void load_program(FILE *program)
 		// Check to see if need to resize code buffer
 		if (state.code_size == state.max_code_size) {
 			state.max_code_size *= 2;
-			char *temp = malloc(
+			unsigned char *temp = malloc(
 					sizeof(char *) * state.max_code_size);
 			memcpy(temp, state.code, state.code_size);
 			free(state.code);

@@ -5,8 +5,8 @@
 #define DEFAULT_CODE_SIZE 128
 
 struct machine_state {
-	char cells[MAX_CELLS];
-	char *code;
+	unsigned char cells[MAX_CELLS];
+	unsigned char *code;
 	unsigned int code_size;
 	unsigned int max_code_size;
 	unsigned int instr_ptr;
