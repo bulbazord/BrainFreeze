@@ -1,0 +1,1 @@
+- Dynamically increase size of cell array when limit has been reached?

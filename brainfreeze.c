@@ -3,8 +3,8 @@
 #include <string.h>
 #include "brainfreeze.h"
 
-#define OOB_ERR "Out of bounds exception: Cannot go above 30,000 cells."
-#define OOB_ERR2 "Out of bounds exception: Cannot go below 0 cells."
+#define OOB_ERR "Out of bounds exception: Cannot exceed 30000 cell limit"
+#define OOB_ERR2 "Out of bounds exception: Cannot go below the 0 cell limit."
 
 struct machine_state state;
 
@@ -14,13 +14,12 @@ struct machine_state state;
 void execute_program(void)
 {
 	char instr = state.code[state.instr_ptr];
-	while (instr != '\0') {
+	while (state.instr_ptr < state.code_size) {
 		switch (instr) {
 			case '>':
 				state.data_ptr++;
 				if (state.data_ptr >= MAX_CELLS) {
-					printf("top kek\n");
-					fprintf(stdin, OOB_ERR);
+					printf(OOB_ERR);
 					return;
 				}
 				break;
@@ -28,8 +27,7 @@ void execute_program(void)
 			case '<':
 				state.data_ptr--;
 				if (state.data_ptr < 0) {
-					printf("top lel\n");
-					fprintf(stdin, OOB_ERR2);
+					printf(OOB_ERR2);
 					return;
 				}
 				break;
@@ -63,7 +61,6 @@ void execute_program(void)
 	}
 	printf("\n");
 }
-
 
 /*
  * A pass over the code to ensure square brackets are balanced.
