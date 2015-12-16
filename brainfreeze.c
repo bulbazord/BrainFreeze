@@ -19,16 +19,17 @@ void execute_program(void)
 			case '>':
 				state.data_ptr++;
 				if (state.data_ptr >= MAX_CELLS) {
-					fprintf(stderr, OOB_ERR);
+					printf("top kek\n");
+					fprintf(stdin, OOB_ERR);
 					return;
 				}
 				break;
 
 			case '<':
 				state.data_ptr--;
-				// Underflow to 2^32 - 1
-				if (state.data_ptr >= MAX_CELLS) {
-					fprintf(stderr, OOB_ERR2);
+				if (state.data_ptr < 0) {
+					printf("top lel\n");
+					fprintf(stdin, OOB_ERR2);
 					return;
 				}
 				break;
@@ -58,11 +59,11 @@ void execute_program(void)
 			default:
 				break;
 		}
-		//putchar(instr);
 		instr = state.code[++state.instr_ptr];
 	}
 	printf("\n");
 }
+
 
 /*
  * A pass over the code to ensure square brackets are balanced.
@@ -179,7 +180,6 @@ int main(int argc, char** argv)
 	if (valid != 0) {
 		printf("Unbalanced brackets. Invalid Brainfuck program.\n");
 	} else {
-		//print_program();
 		execute_program();
 	}
 

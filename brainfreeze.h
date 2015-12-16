@@ -10,7 +10,7 @@ struct machine_state {
 	unsigned int code_size;
 	unsigned int max_code_size;
 	unsigned int instr_ptr;
-	unsigned int data_ptr;
+	int data_ptr;
 };
 
 void execute_program(void);
