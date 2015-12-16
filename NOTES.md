@@ -11,4 +11,4 @@ upon encountering a [, you can lookup which ] to jump to and vice versa.
 
 # Stack
 The stack is just used for matching the [s and ]s in the code so they can be
-inserted into the bimap properly.
+inserted into the bimap properly. Implemented as a linked list.

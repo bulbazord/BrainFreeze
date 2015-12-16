@@ -49,9 +49,15 @@ void execute_program(void)
 				break;
 
 			case '[':
+				if (state.cells[state.data_ptr] == 0) {
+					jump_fwd();
+				}
 				break;
 
 			case ']':
+				if (state.cells[state.data_ptr] != 0) {
+					jump_bkwd();
+				}
 				break;
 
 			default:
@@ -62,22 +68,82 @@ void execute_program(void)
 	printf("\n");
 }
 
+void jump_fwd(void)
+{
+	struct list *curr = state.jump_list;
+	while (curr->start != state.instr_ptr) {
+		curr = curr->next;
+	}
+	if (curr->start != state.instr_ptr) {
+		printf("jump_fwd(): ");
+		printf("You should not be here, mortal.\n");
+	} else {
+		state.instr_ptr = curr->stop;
+	}
+}
+
+void jump_bkwd(void)
+{
+	struct list *curr = state.jump_list;
+	while (curr->stop != state.instr_ptr) {
+		curr = curr->next;
+	}
+	if (curr->stop != state.instr_ptr) {
+		printf("jump_bkwd(): ");
+		printf("You should not be here, mortal.\n");
+	} else {
+		state.instr_ptr = curr->start;
+	}
+}
+
 /*
  * A pass over the code to ensure square brackets are balanced.
+ * Creates the jump-list for the code as well.
+ * If code is invalid, return 0. If code is valid, return a non-zero value.
  */
 int validate_program(void)
 {
-	int balance = 0;
+	struct list *head = NULL;
 	for (unsigned int i = 0; i < state.code_size; i++) {
-		if (balance < 0)
-			return 1;
-		if (state.code[i] == '[')
-			balance++;
-		if (state.code[i] == ']')
-			balance--;
+		if (state.code[i] == '[') {
+			struct list *temp = malloc(sizeof(struct list));
+			temp->start= i;
+			temp->next = head;
+			head = temp;
+		} else if (state.code[i] == ']') {
+			if (head == NULL) {
+				return 0;
+			} else {
+				struct list *temp = head;
+				head = head->next;
+
+				temp->stop = i;
+				temp->next = state.jump_list;
+				state.jump_list = temp;
+			}
+		}
 	}
 
-	return balance;
+	int ret = (head == NULL);
+	if (ret == 0) {
+		while (head != NULL) {
+			struct list *temp = head;
+			head = head->next;
+			free(temp);
+		}
+		cleanup_jump_list();
+	}
+
+	return ret;
+}
+
+void cleanup_jump_list(void)
+{
+	while (state.jump_list != NULL) {
+		struct list *temp = state.jump_list;
+		state.jump_list = state.jump_list->next;
+		free(temp);
+	}
 }
 
 /*
@@ -170,16 +236,18 @@ int main(int argc, char** argv)
 	state.max_code_size = DEFAULT_CODE_SIZE;
 	state.instr_ptr = 0;
 	state.data_ptr = 0;
+	state.jump_list = NULL;
 
 	load_program(program);
 
 	int valid = validate_program();
-	if (valid != 0) {
+	if (valid == 0) {
 		printf("Unbalanced brackets. Invalid Brainfuck program.\n");
 	} else {
 		execute_program();
 	}
 
+	cleanup_jump_list();
 	fclose(program);
 	free(state.code);
 	return 0;
